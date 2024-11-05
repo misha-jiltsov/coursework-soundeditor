@@ -1,11 +1,6 @@
 
-
-
 import tkinter as tk
 from midiutil.MidiFile import MIDIFile
-
-
-
 
 
 class Main:
@@ -77,7 +72,7 @@ class Main:
 
         ######### SMARTER WAY OF DOING IT ############
 
-        labels = ["Volume:", "Channel:", "Time:", "Pitch:", "Duration:"]
+        labels = ["Volume:", "Time:", "Pitch:", "Duration:"]
         self.inputs = {}
 
         for i, label_text in enumerate(labels):
@@ -112,22 +107,29 @@ class Main:
         newFile = MIDIFile(1)  # only 1 track
         track = 0
 
-        for notes in self.allNotes:
-            ...
+        trackintruments = {}
 
+        for note in self.allNotes:
+            if note.getInstruments() in trackintruments.keys():
+                note.addSelfToTrack(newFile, track, trackintruments[note.getInstrument()])
+            elif len(trackintruments)>=16:
+                continue
+            else:
+                trackintruments[note.getInstrument()] = len(trackintruments)
 
 
 class Note:
-    def __init__(self, volume, channel, time, pitch, duration, instrument):
+    def __init__(self, volume, time, pitch, duration, instrument):
         self.pitch = pitch
         self.time = time
         self.duration = duration
         self.volume = volume
-        self.channel = channel
         self.instrument = instrument
 
-    def addSelfToTrack(self, file: MIDIFile, track: int):
-        file.addNote(track, self.channel, self.pitch, self.time, self.duration, self.volume)
+    def addSelfToTrack(self, file: MIDIFile, track: int, channel):
+        file.addNote(track, channel, self.pitch, self.time, self.duration, self.volume)
 
+    def getInstrument(self):
+        return self.instrument
 
 main = Main()
