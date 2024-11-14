@@ -14,6 +14,8 @@ class Main:
         self.getAllInstruments()
         self.populate()
 
+        print(self.instruments)
+
         self.root.mainloop()
 
     def getAllInstruments(self):
@@ -98,7 +100,7 @@ class Main:
         self.notesdisplayframe.grid(column=2, row=0)
 
         self.addnoteButton = tk.Button(self.controlframe, text="Add Note", command= lambda: self.addNote())
-        self.exportbutton = tk.Button(self.controlframe, text="Export to file")
+        self.exportbutton = tk.Button(self.controlframe, text="Export to file", command= lambda: self.exportall())
 
         self.addnoteButton.grid(column = 0, row = 6)
         self.exportbutton.grid(column = 0, row = 7)
@@ -107,15 +109,23 @@ class Main:
         newFile = MIDIFile(1)  # only 1 track
         track = 0
 
-        trackintruments = {}
+        trackintruments = {} # {}
+
+
 
         for note in self.allNotes:
-            if note.getInstruments() in trackintruments.keys():
+            if note.getInstrument() in trackintruments.keys():
                 note.addSelfToTrack(newFile, track, trackintruments[note.getInstrument()])
             elif len(trackintruments)>=16:
                 continue
             else:
                 trackintruments[note.getInstrument()] = len(trackintruments)
+
+        for channel in trackintruments.keys():
+            newFile.addProgramChange(track, trackintruments[channel], 0, channel)
+
+        with open("output.mid", 'wb') as outf:
+            newFile.writeFile(outf)
 
 
 class Note:
