@@ -108,21 +108,22 @@ class Main:
     def exportall(self):
         newFile = MIDIFile(1)  # only 1 track
         track = 0
-
-        trackintruments = {} # {}
-
-
+        newFile.addTempo(track, 0, 120)
+        instrument_channel_dictionary = {} # {}
 
         for note in self.allNotes:
-            if note.getInstrument() in trackintruments.keys():
-                note.addSelfToTrack(newFile, track, trackintruments[note.getInstrument()])
-            elif len(trackintruments)>=16:
+            if note.getInstrument() in instrument_channel_dictionary.keys():
+                newFile.addNote(track, instrument_channel_dictionary[note.getInstrument()], *note.returnALlValues())
+                print(track, instrument_channel_dictionary[note.getInstrument()], *note.returnALlValues())
+                #note.addSelfToTrack(newFile, track, instrument_channel_dictionary[note.getInstrument()])
+            elif len(instrument_channel_dictionary)>=16:
                 continue
             else:
-                trackintruments[note.getInstrument()] = len(trackintruments)
+                instrument_channel_dictionary[note.getInstrument()] = len(instrument_channel_dictionary)
 
-        for channel in trackintruments.keys():
-            newFile.addProgramChange(track, trackintruments[channel], 0, channel)
+        for channel in instrument_channel_dictionary.keys():
+            newFile.addProgramChange(track, instrument_channel_dictionary[channel], 0, channel)
+
 
         with open("output.mid", 'wb') as outf:
             newFile.writeFile(outf)
@@ -137,7 +138,11 @@ class Note:
         self.instrument = instrument
 
     def addSelfToTrack(self, file: MIDIFile, track: int, channel):
-        file.addNote(track, channel, self.pitch, self.time, self.duration, self.volume)
+        file.addNote(int(track), int(channel), int(self.pitch), int(self.time), int(self.duration), int(self.volume))
+
+    def returnALlValues(self):
+        return [self.pitch, self.time, self.duration, self.volume]
+
 
     def getInstrument(self):
         return self.instrument
