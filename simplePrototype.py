@@ -141,7 +141,7 @@ class Note:
         file.addNote(int(track), int(channel), int(self.pitch), int(self.time), int(self.duration), int(self.volume))
 
     def returnALlValues(self):
-        return [self.pitch, self.time, self.duration, self.volume]
+        return [int(x) for x in [self.pitch, self.time, self.duration, self.volume]]
 
 
     def getInstrument(self):
