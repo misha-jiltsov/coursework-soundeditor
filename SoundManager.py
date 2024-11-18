@@ -41,7 +41,7 @@ duration = 3        # 1 beat long
 mf.addNote(track, channel, pitch, time, duration, volume)
 
 # write it to disk
-with open("output.mid", 'wb') as outf:
+with open("output.wav", 'wb') as outf:
     mf.writeFile(outf)
 
 
